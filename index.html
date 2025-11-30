@@ -3,27 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fresque des Générations — Version Imprimable</title>
+    <title>Fresque des Générations - Toutes les Cartes</title>
     <style>
-        @media print {
-            @page {
-                size: A5;
-                margin: 0;
-            }
-            body {
-                margin: 0;
-                padding: 0;
-            }
-            .card-page {
-                page-break-after: always;
-                width: 148mm;
-                height: 210mm;
-            }
-            .no-print {
-                display: none !important;
-            }
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -31,516 +12,1904 @@
         }
 
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
         }
 
-        .print-instructions {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 900px;
-            margin: 0 auto 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
         }
 
-        .print-instructions h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-
-        .print-instructions ol {
-            margin-left: 25px;
-            line-height: 1.8;
-            color: #555;
-        }
-
-        .print-instructions li {
-            margin: 10px 0;
-        }
-
-        .print-btn {
-            background: #4A7BA7;
+        h1 {
+            text-align: center;
             color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 16px;
-            border-radius: 8px;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.95);
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        .stats {
+            text-align: center;
+            color: white;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .category {
+            margin-bottom: 60px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .category-title {
+            color: white;
+            font-size: 2em;
+            margin: 0;
+            flex: 1;
+        }
+
+        .category-count {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2em;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            perspective: 1000px;
+        }
+
+        .card-container {
+            position: relative;
+            width: 100%;
+            padding-top: 141%;
             cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.3s;
         }
 
-        .print-btn:hover {
-            background: #3a6b97;
+        .card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
 
-        /* Styles des cartes */
-        .card-page {
-            width: 148mm;
-            height: 210mm;
-            background: white;
-            margin: 20px auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .card-container:hover .card {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
         }
+
+        .card-front {
+            background: white;
+        }
+
+        .card-back {
+            background: #f8f9fa;
+            transform: rotateY(180deg);
+            padding: 18px;
+            font-size: 0.85em;
+            line-height: 1.5;
+            overflow-y: auto;
+        }
+
+        .science .card-header { background: linear-gradient(135deg, #4A90E2, #357ABD); }
+        .recits .card-header { background: linear-gradient(135deg, #7ED321, #5FA319); }
+        .ressources .card-header { background: linear-gradient(135deg, #F5A623, #E09316); }
+        .dilemmes .card-header { background: linear-gradient(135deg, #D0021B, #A00115); }
+        .blanches .card-header { background: linear-gradient(135deg, #9B9B9B, #757575); }
 
         .card-header {
-            height: 45mm;
-            padding: 15px 20px;
+            min-height: 55px;
+            padding: 12px 15px;
             color: white;
             display: flex;
-            flex-direction: column;
+            align-items: center;
             justify-content: space-between;
-        }
-
-        .card-number {
-            font-size: 14px;
-            opacity: 0.8;
-            font-weight: normal;
-        }
-
-        .card-category {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            opacity: 0.9;
-            font-weight: 500;
-        }
-
-        .card-title {
-            font-size: 22px;
-            font-weight: 700;
-            line-height: 1.2;
-            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
         .card-icon {
-            font-size: 32px;
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            opacity: 0.3;
+            font-size: 1.4em;
+            flex-shrink: 0;
         }
 
-        .card-body {
+        .card-title {
+            font-size: 0.95em;
+            font-weight: bold;
             flex: 1;
-            padding: 20px;
-            background: #fafafa;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            text-align: center;
+            padding: 0 8px;
+            line-height: 1.2;
         }
 
-        .card-illustration-placeholder {
-            background: #e8e8e8;
-            border-radius: 8px;
-            padding: 40px 20px;
-            text-align: center;
-            color: #999;
-            font-size: 13px;
-            margin-bottom: 15px;
-            border: 2px dashed #ccc;
-            min-height: 80px;
+        .card-number {
+            font-size: 0.85em;
+            opacity: 0.8;
+            flex-shrink: 0;
+        }
+
+        .card-illustration {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5em;
+            color: rgba(0,0,0,0.1);
+            min-height: 0;
         }
 
         .card-tagline {
-            font-size: 15px;
-            line-height: 1.5;
-            color: #333;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.03);
+            font-size: 0.88em;
+            line-height: 1.35;
             font-style: italic;
-            text-align: center;
-            margin-bottom: 15px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            flex-shrink: 0;
         }
 
-        .card-data {
-            background: white;
-            padding: 12px;
+        .card-back h3 {
+            color: #333;
+            font-size: 1em;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .data-box {
+            background: #e3f2fd;
+            padding: 10px;
             border-radius: 6px;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #555;
-            border-left: 3px solid #ddd;
-            margin: 10px 0;
+            margin: 12px 0;
+            font-size: 0.88em;
+            border-left: 3px solid #2196F3;
         }
 
-        .card-questions {
-            margin-top: 15px;
-        }
-
-        .card-question {
+        .question {
             margin: 10px 0;
-            font-size: 13px;
-            line-height: 1.5;
-            padding-left: 30px;
+            padding-left: 28px;
             position: relative;
-            color: #444;
+            font-size: 0.9em;
         }
 
-        .card-question::before {
+        .question::before {
             position: absolute;
             left: 0;
-            font-size: 18px;
+            font-size: 1.2em;
         }
 
-        .card-question.elder::before {
-            content: "🧓";
+        .question.elder::before { content: "🧓"; }
+        .question.youth::before { content: "🧑"; }
+
+        .question strong {
+            color: #555;
         }
 
-        .card-question.youth::before {
-            content: "🧑";
-        }
-
-        .card-source {
-            font-size: 11px;
-            color: #888;
+        .source {
+            font-size: 0.75em;
+            color: #666;
             font-style: italic;
             margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px dashed #ddd;
+            padding-top: 8px;
+            border-top: 1px dashed #ccc;
         }
 
-        /* Couleurs par catégorie */
-        .science { background: linear-gradient(135deg, #4A7BA7 0%, #6B9DC4 100%); }
-        .recits { background: linear-gradient(135deg, #6B9B77 0%, #88B894 100%); }
-        .ressources { background: linear-gradient(135deg, #E8A75D 0%, #F0BC7A 100%); }
-        .dilemmes { background: linear-gradient(135deg, #C55A5A 0%, #D97777 100%); }
-        .nouvelles { background: linear-gradient(135deg, #8B7AA8 0%, #A594C0 100%); }
-
-        .governance-box {
-            background: white;
-            border-radius: 6px;
-            padding: 10px;
-            margin: 8px 0;
-            font-size: 12px;
-            line-height: 1.4;
+        .governance-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
         }
 
-        .governance-box strong {
+        .level {
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.82em;
+            line-height: 1.3;
+        }
+
+        .level-macro {
+            background: #fff3e0;
+            border-left: 3px solid #ff9800;
+        }
+
+        .level-meso {
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+        }
+
+        .level-micro {
+            background: #e1f5fe;
+            border-left: 3px solid #03a9f4;
+        }
+
+        .level strong {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             color: #333;
+            font-size: 0.95em;
         }
 
-        .macro { border-left: 3px solid #ff9800; }
-        .meso { border-left: 3px solid #4caf50; }
-        .micro { border-left: 3px solid #03a9f4; }
-
-        /* Page de couverture */
-        .cover-page {
-            background: linear-gradient(135deg, #4A7BA7 0%, #6B9B77 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
+        .blank-card-content {
+            padding: 20px;
             text-align: center;
+            color: #666;
         }
 
-        .cover-page h1 {
-            font-size: 36px;
-            margin-bottom: 15px;
-            font-weight: 700;
+        .blank-zones {
+            margin-top: 15px;
+            text-align: left;
         }
 
-        .cover-page h2 {
-            font-size: 18px;
-            font-weight: 400;
-            opacity: 0.95;
-            margin-bottom: 40px;
+        .blank-zone {
+            background: white;
+            border: 2px dashed #ccc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            min-height: 60px;
         }
 
-        .cover-page .stats {
-            background: rgba(255,255,255,0.15);
-            padding: 20px 30px;
-            border-radius: 10px;
-            font-size: 14px;
-            line-height: 1.8;
-        }
-
-        .section-divider {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
+        .flip-hint {
             text-align: center;
+            color: white;
+            margin: 40px 0;
+            font-size: 1.15em;
+            animation: pulse 2s infinite;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
         }
 
-        .section-divider h2 {
-            font-size: 32px;
-            margin-bottom: 15px;
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
         }
 
-        .section-divider p {
-            font-size: 16px;
-            opacity: 0.9;
-            max-width: 80%;
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .category-title { font-size: 1.5em; }
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+
+        ul {
+            margin: 8px 0 8px 20px;
+        }
+
+        li {
+            margin: 4px 0;
         }
     </style>
 </head>
 <body>
-
-    <!-- Instructions d'impression -->
-    <div class="print-instructions no-print">
-        <h1>📄 Instructions d'Impression</h1>
-        <p style="margin-bottom: 20px; color: #666;">
-            Ce document contient 59 cartes optimisées pour impression A5 (148×210 mm).<br>
-            Suivez ces étapes pour obtenir un rendu professionnel :
-        </p>
-        <ol>
-            <li><strong>Cliquez sur le bouton "Imprimer en PDF"</strong> ci-dessous (ou Ctrl+P / Cmd+P)</li>
-            <li>Dans la fenêtre d'impression, sélectionnez <strong>"Enregistrer au format PDF"</strong></li>
-            <li>Paramètres recommandés :
-                <ul style="margin-top: 8px;">
-                    <li>Format : <strong>A5</strong></li>
-                    <li>Orientation : <strong>Portrait</strong></li>
-                    <li>Marges : <strong>Aucune</strong></li>
-                    <li>Couleurs : <strong>Couleur</strong></li>
-                </ul>
-            </li>
-            <li><strong>Ajout des images :</strong> Ouvrez le PDF avec Adobe Acrobat ou un éditeur, puis ajoutez les images dans les zones grises prévues</li>
-            <li><strong>Impression finale :</strong> Papier 300g/m² recommandé, pelliculage mat optionnel</li>
-        </ol>
-        <button class="print-btn" onclick="window.print()">🖨️ Imprimer en PDF</button>
-    </div>
-
-    <!-- Page de couverture -->
-    <div class="card-page cover-page">
-        <h1>🌍 FRESQUE DES GÉNÉRATIONS</h1>
-        <h2>Outil de Dialogue Intergénérationnel sur le Climat</h2>
+    <div class="container">
+        <h1>🌍 Fresque des Générations</h1>
+        <p class="subtitle">Prototype Complet — 55 Cartes Intergénérationnelles</p>
         <div class="stats">
-            <strong>59 Cartes</strong><br>
-            20 Science & Inégalités | 15 Récits Générationnels<br>
-            10 Ressources | 10 Dilemmes & Gouvernance<br>
-            4 Cartes Approfondies (Droits, Fast Fashion, Mines, Budget Carbone)
+            📊 20 Cartes Science & Inégalités | 15 Récits Générationnels | 10 Ressources | 10 Dilemmes & Gouvernance | 5 Cartes Blanches
         </div>
-        <p style="margin-top: 40px; font-size: 14px; opacity: 0.8;">
-            Alliance des générations pour le climat • Novembre 2025
-        </p>
+
+        <!-- CATÉGORIE 1 : SCIENCE & INÉGALITÉS (20 cartes) -->
+        <div class="category">
+            <div class="category-header">
+                <h2 class="category-title">🔵 Cartes Science & Inégalités</h2>
+                <span class="category-count">20 cartes</span>
+            </div>
+            <div class="cards-grid">
+                
+                <!-- Carte 1 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌡️</span>
+                                <span class="card-title">EFFET DE SERRE</span>
+                                <span class="card-number">#1</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #87CEEB, #FFE5B4);">☀️</div>
+                            <div class="card-tagline">Le CO2 emprisonne la chaleur du soleil dans l'atmosphère</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>EFFET DE SERRE</h3>
+                            <div class="data-box">CO₂ atmosphérique : 280 ppm (1850) → 421 ppm (2024). Augmentation de +50% en 170 ans.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Parliez-vous de l'effet de serre dans votre jeunesse ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Depuis quand en avez-vous entendu parler ?</div>
+                            <div class="source">Source : GIEC 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 2 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">⚠️</span>
+                                <span class="card-title">POINTS DE BASCULE</span>
+                                <span class="card-number">#2</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(45deg, #FF6B6B, #4ECDC4);">🎲</div>
+                            <div class="card-tagline">Au-delà de +2°C, des cascades irréversibles peuvent se déclencher</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>POINTS DE BASCULE</h3>
+                            <div class="data-box">Déclenchement de boucles de rétroaction (fonte calotte glaciaire, dégel pergélisol, dépérissement Amazonie) créant un effet domino incontrôlable.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous vécu des événements climatiques qui vous ont marqué ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Quelles peurs portez-vous pour votre avenir ?</div>
+                            <div class="source">Source : Wunderling et al., Nature Climate Change 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 3 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">⏰</span>
+                                <span class="card-title">COURSE CONTRE LA MONTRE</span>
+                                <span class="card-number">#3</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #56ab2f, #a8e063);">⏱️</div>
+                            <div class="card-tagline">+1,5°C sera atteint d'ici 2029-2030 — Il faut agir MAINTENANT</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>COURSE CONTRE LA MONTRE</h3>
+                            <div class="data-box">Le seuil de +1,5°C n'est plus atteignable. Il reste ~5 ans pour atteindre le pic d'émissions et inverser la courbe.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Combien de temps pensiez-vous avoir pour agir quand vous étiez jeunes ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Que signifie pour vous "agir maintenant" ?</div>
+                            <div class="source">Source : Forster et al., Earth System Science Data 2025</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 4 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌍</span>
+                                <span class="card-title">DÉMOGRAPHIE & EMPREINTE</span>
+                                <span class="card-number">#4</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #FFA726, #FF7043);">🗺️</div>
+                            <div class="card-tagline">L'Afrique : 17% de l'humanité, seulement 4% des émissions CO₂</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>DÉMOGRAPHIE & EMPREINTE</h3>
+                            <div class="data-box">1,5 milliard d'Africains (54 pays) = 4% émissions CO₂ mondiales. Pourtant : taux de croissance démographique le plus élevé.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Comment étiez-vous informés des enjeux mondiaux dans votre jeunesse ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Que pensez-vous de cette injustice ?</div>
+                            <div class="source">Source : Données ONU Population 2024</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 5 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">💰</span>
+                                <span class="card-title">LE 1% LE PLUS RICHE</span>
+                                <span class="card-number">#5</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #333333, #FFD700);">📊</div>
+                            <div class="card-tagline">1% émettent plus de CO₂ que 5 milliards de personnes</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>LE 1% LE PLUS RICHE</h3>
+                            <div class="data-box">1% les plus riches émettent plus de CO₂ que 66% (5 milliards) les plus pauvres de l'humanité.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Comment le niveau de vie a-t-il évolué dans votre vie ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Quel mode de vie vous semble juste et soutenable ?</div>
+                            <div class="source">Source : Oxfam "Égalité climatique, une planète pour les 99%" 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 6 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">😢</span>
+                                <span class="card-title">QUI SUBIT ?</span>
+                                <span class="card-number">#6</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #2c3e50, #bdc3c7);">🌊</div>
+                            <div class="card-tagline">Pays à faible revenu : 0 responsabilité, 100% des impacts dès aujourd'hui</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>QUI SUBIT ? (IMPACTS DIFFÉRENCIÉS)</h3>
+                            <div class="data-box">Les pays les plus pauvres subissent inondations, sécheresses, famines alors qu'ils n'ont pas causé le changement climatique.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous vu des communautés vulnérables dans votre vie ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Connaissez-vous des personnes directement touchées par le climat ?</div>
+                            <div class="source">Source : GIEC AR6 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 7 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">⚖️</span>
+                                <span class="card-title">ADAPTATION & ATTÉNUATION</span>
+                                <span class="card-number">#7</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #89f7fe, #66a6ff);">🛡️</div>
+                            <div class="card-tagline">Réduire émissions (atténuation) ET s'adapter aux impacts (adaptation) — Les deux sont nécessaires ET justes</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>ADAPTATION & ATTÉNUATION</h3>
+                            <div class="data-box">Atténuation : réduire émissions (responsabilité pays riches). Adaptation : digues, agriculture résiliente (coûte cher aux pays pauvres).</div>
+                            <div class="question elder"><strong>Aînés :</strong> Quelles adaptations avez-vous connues (ex: sécheresse 1976) ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Quelles adaptations imaginez-vous pour votre quartier ?</div>
+                            <div class="source">Source : GIEC 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 8 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">👨‍👩‍👧‍👦</span>
+                                <span class="card-title">JUSTICE INTERGÉNÉRATIONNELLE</span>
+                                <span class="card-number">#8</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #fa709a, #fee140);">🤝</div>
+                            <div class="card-tagline">Générations actuelles héritent de 150 ans d'émissions, générations futures subiront 80% des impacts</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>JUSTICE INTERGÉNÉRATIONNELLE</h3>
+                            <div class="data-box">Nous héritons des émissions passées. Nos enfants et petits-enfants vivront les pires conséquences sans les avoir causées.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Quel monde voulez-vous léguer ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Que devrait faire la génération de vos parents/grands-parents aujourd'hui ?</div>
+                            <div class="source">Source : Rapport Brundtland 1987, actualisé GIEC 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 9 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">💧</span>
+                                <span class="card-title">ACCÈS À L'EAU</span>
+                                <span class="card-number">#9</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #667eea, #764ba2);">🚰</div>
+                            <div class="card-tagline">2 milliards de personnes n'ont pas accès à l'eau potable — Le climat aggrave la situation</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>ACCÈS À L'EAU</h3>
+                            <div class="data-box">Sécheresses accrues, glaciers qui fondent, nappes phréatiques épuisées : l'accès à l'eau devient un enjeu de survie.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Comment l'accès à l'eau a-t-il évolué dans votre vie ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Imaginez-vous des pénuries d'eau en France ?</div>
+                            <div class="source">Source : OMS/UNICEF 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 10 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🍞</span>
+                                <span class="card-title">SÉCURITÉ ALIMENTAIRE</span>
+                                <span class="card-number">#10</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #ffecd2, #fcb69f);">🌾</div>
+                            <div class="card-tagline">828 millions de personnes souffrent de la faim — Le climat menace les récoltes</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>SÉCURITÉ ALIMENTAIRE</h3>
+                            <div class="data-box">Canicules, sécheresses, inondations détruisent les récoltes. Les prix alimentaires flambent, affectant d'abord les plus pauvres.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous connu des pénuries alimentaires (ex: rationnement) ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Craignez-vous des crises alimentaires futures ?</div>
+                            <div class="source">Source : FAO 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 11 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">✈️</span>
+                                <span class="card-title">MIGRATIONS CLIMATIQUES</span>
+                                <span class="card-number">#11</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #30cfd0, #330867);">🧳</div>
+                            <div class="card-tagline">216 millions de réfugiés climatiques d'ici 2050 selon la Banque Mondiale</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>MIGRATIONS CLIMATIQUES</h3>
+                            <div class="data-box">Montée des eaux, désertification, événements extrêmes forcent des millions de personnes à fuir leur terre.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous vécu ou entendu parler de migrations forcées ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Comment accueillir dignement les réfugiés climatiques ?</div>
+                            <div class="source">Source : Banque Mondiale 2021, Groundswell Report</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 12 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🏥</span>
+                                <span class="card-title">SANTÉ & CANICULES</span>
+                                <span class="card-number">#12</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #f093fb, #f5576c);">🌡️</div>
+                            <div class="card-tagline">Canicules, maladies vectorielles, pollution : le climat tue</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>SANTÉ & CANICULES</h3>
+                            <div class="data-box">Les canicules tuent (surtout seniors et enfants). Malaria, dengue se propagent. La pollution aggrave asthme et maladies cardiaques.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Comment vous protégez-vous des canicules ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Que peut-on faire pour protéger les plus vulnérables ?</div>
+                            <div class="source">Source : OMS 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 13 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">⚔️</span>
+                                <span class="card-title">CONFLITS & RESSOURCES</span>
+                                <span class="card-number">#13</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #434343, #000000);">💣</div>
+                            <div class="card-tagline">Eau, terres, ressources : le climat exacerbe les tensions géopolitiques</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>CONFLITS & RESSOURCES</h3>
+                            <div class="data-box">Sécheresses → famines → migrations → conflits. Le Sahel, le Moyen-Orient, l'Asie centrale sont déjà touchés.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous vécu des périodes de pénurie et tension sociale ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Comment éviter que le climat devienne une source de guerre ?</div>
+                            <div class="source">Source : CICR, ONU 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 14 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">💼</span>
+                                <span class="card-title">EMPLOIS DE LA TRANSITION</span>
+                                <span class="card-number">#14</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #a1c4fd, #c2e9fb);">🔧</div>
+                            <div class="card-tagline">Millions d'emplois créés dans les énergies renouvelables, isolation, agriculture bio</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>EMPLOIS DE LA TRANSITION</h3>
+                            <div class="data-box">La transition crée des emplois (solaire, éolien, rénovation bâtiments) mais en détruit d'autres (fossiles, industrie polluante). Comment accompagner ?</div>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous vécu des reconversions professionnelles dans votre vie ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Quels métiers verts vous attirent ?</div>
+                            <div class="source">Source : OIT 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 15 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">💵</span>
+                                <span class="card-title">COÛT DE L'INACTION</span>
+                                <span class="card-number">#15</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #ff0844, #ffb199);">📉</div>
+                            <div class="card-tagline">Ne rien faire coûtera 10× plus cher qu'agir maintenant</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>COÛT DE L'INACTION</h3>
+                            <div class="data-box">Rapport Stern (2006) : agir coûte 1% du PIB mondial, ne rien faire coûtera 5-20% du PIB. Chaque année de retard augmente la facture.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Auriez-vous préféré qu'on agisse plus tôt ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Êtes-vous prêts à payer pour la transition ?</div>
+                            <div class="source">Source : Rapport Stern 2006, actualisé GIEC 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartes 16-20 : Cartes Scientifiques Complémentaires -->
+                
+                <!-- Carte 16 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌲</span>
+                                <span class="card-title">BIODIVERSITÉ EN DANGER</span>
+                                <span class="card-number">#16</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #667eea, #764ba2);">🦋</div>
+                            <div class="card-tagline">1 million d'espèces menacées d'extinction — Le climat aggrave l'effondrement</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>BIODIVERSITÉ EN DANGER</h3>
+                            <div class="data-box">Réchauffement + destruction habitats = 6e extinction de masse. Les écosystèmes s'effondrent, menaçant notre survie.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Quels animaux/plantes avez-vous vu disparaître ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Que représente la nature pour vous ?</div>
+                            <div class="source">Source : IPBES 2019</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 17 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🏔️</span>
+                                <span class="card-title">FONTE DES GLACIERS</span>
+                                <span class="card-number">#17</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #e0eafc, #cfdef3);">❄️</div>
+                            <div class="card-tagline">Les glaciers disparaissent, menaçant l'eau douce de milliards de personnes</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>FONTE DES GLACIERS</h3>
+                            <div class="data-box">Himalaya, Alpes, Andes : les glaciers fondent 2× plus vite qu'en 2000. Fleuves asiatiques (Gange, Mékong, Yangtsé) menacés.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous vu des glaciers ? Comment ont-ils changé ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Que signifie pour vous la disparition des glaciers ?</div>
+                            <div class="source">Source : GIEC 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 18 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌊</span>
+                                <span class="card-title">MONTÉE DES EAUX</span>
+                                <span class="card-number">#18</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #0575e6, #021b79);">🏝️</div>
+                            <div class="card-tagline">+1 mètre d'ici 2100 — Villes côtières et îles menacées</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>MONTÉE DES EAUX</h3>
+                            <div class="data-box">Fonte glaciers + dilatation thermique océans = +1m d'ici 2100. Submersion : Bangladesh, Maldives, Miami, Venise, Pays-Bas...</div>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous vu le niveau de la mer changer (à la plage, sur le littoral) ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Imaginez-vous vivre dans une ville côtière en 2100 ?</div>
+                            <div class="source">Source : GIEC AR6 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 19 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">⚡</span>
+                                <span class="card-title">ÉNERGIES FOSSILES</span>
+                                <span class="card-number">#19</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #89f7fe, #66a6ff);">🛢️</div>
+                            <div class="card-tagline">80% de l'énergie mondiale vient encore du pétrole, gaz, charbon</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>ÉNERGIES FOSSILES</h3>
+                            <div class="data-box">Malgré les renouvelables, les fossiles dominent. Les émissions continuent d'augmenter. Il faut sortir des fossiles d'ici 2050.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Comment l'énergie a-t-elle évolué dans votre vie (charbon, pétrole, électricité) ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Pensez-vous qu'on peut se passer complètement des fossiles ?</div>
+                            <div class="source">Source : AIE 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 20 -->
+                <div class="card-container">
+                    <div class="card science">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌀</span>
+                                <span class="card-title">ÉVÉNEMENTS EXTRÊMES</span>
+                                <span class="card-number">#20</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #434343, #000000);">🌪️</div>
+                            <div class="card-tagline">Ouragans, inondations, incendies : +300% en 50 ans</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>ÉVÉNEMENTS EXTRÊMES</h3>
+                            <div class="data-box">Le réchauffement intensifie tempêtes, inondations, sécheresses, feux. Événements jadis "centenaires" deviennent annuels.</div>
+                            <div class="question elder"><strong>Aînés :</strong> Quel événement climatique vous a le plus marqué dans votre vie ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Avez-vous peur de vivre des catastrophes climatiques ?</div>
+                            <div class="source">Source : Munich Re, GIEC 2023</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CATÉGORIE 2 : RÉCITS GÉNÉRATIONNELS (15 cartes) -->
+        <div class="category">
+            <div class="category-header">
+                <h2 class="category-title">🟢 Cartes Récits Générationnels</h2>
+                <span class="category-count">15 cartes</span>
+            </div>
+            <div class="cards-grid">
+
+                <!-- Carte 21 : 1973 Crise Pétrolière -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">⛽</span>
+                                <span class="card-title">1973 — CRISE PÉTROLIÈRE</span>
+                                <span class="card-number">#21</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #2C3E50, #BDC3C7);">🚗</div>
+                            <div class="card-tagline">Premier choc pétrolier : files aux pompes, prise de conscience de la dépendance</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>1973 — CRISE PÉTROLIÈRE</h3>
+                            <p>Le premier choc pétrolier révèle la dépendance aux énergies fossiles. Les prix quadruplent, provoquant restrictions et changements de comportement.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Comment avez-vous vécu cette crise ? Avez-vous changé vos habitudes ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Pensez-vous qu'une crise similaire pourrait aider à la transition aujourd'hui ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 22 : 1976 Sécheresse -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌵</span>
+                                <span class="card-title">1976 — GRANDE SÉCHERESSE</span>
+                                <span class="card-number">#22</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #d4a574, #e6ddc4);">💧</div>
+                            <div class="card-tagline">Été 1976 : sécheresse historique, restrictions d'eau, pertes agricoles</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>1976 — GRANDE SÉCHERESSE</h3>
+                            <p>L'été 1976 marque les mémoires : pas de pluie pendant 3 mois, nappes asséchées, récoltes perdues. Les Français apprennent à économiser l'eau.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Vous en souvenez-vous ? Comment y a-t-on fait face ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Les sécheresses deviennent fréquentes. Quelles solutions envisagez-vous ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 23 : 1986 Tchernobyl -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">☢️</span>
+                                <span class="card-title">1986 — TCHERNOBYL</span>
+                                <span class="card-number">#23</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #000000, #e74c3c);">☢️</div>
+                            <div class="card-tagline">Catastrophe nucléaire — Prise de conscience des risques énergétiques</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>1986 — TCHERNOBYL</h3>
+                            <p>L'explosion du réacteur nucléaire en Ukraine traumatise l'Europe. Le "nuage radioactif" divise sur la sûreté du nucléaire.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Comment avez-vous réagi à cette catastrophe ? Cela a-t-il changé votre rapport à l'énergie ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Le nucléaire vous fait-il peur ou espoir pour le climat ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 24 : 1992 Sommet de Rio -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌍</span>
+                                <span class="card-title">1992 — SOMMET DE RIO</span>
+                                <span class="card-number">#24</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #89f7fe, #66a6ff);">🤝</div>
+                            <div class="card-tagline">Premier engagement international climat — 32 ans plus tard, objectifs non atteints</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>1992 — SOMMET DE RIO</h3>
+                            <p>178 pays signent la Convention Climat à Rio. L'espoir est immense. Mais les émissions continuent d'augmenter.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Y avez-vous cru à l'époque ? Qu'est-ce qui a bloqué ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Faites-vous confiance aux gouvernements aujourd'hui ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 25 : 2003 Canicule -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌡️</span>
+                                <span class="card-title">2003 — CANICULE MEURTRIÈRE</span>
+                                <span class="card-number">#25</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #FF4500, #FFD700);">🚑</div>
+                            <div class="card-tagline">15 000 morts en France, principalement des personnes âgées isolées</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>2003 — CANICULE MEURTRIÈRE</h3>
+                            <p>L'été 2003 frappe la France : températures record, 15 000 décès, principalement des seniors isolés. Une tragédie révélant la vulnérabilité face au climat.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Comment protéger les vulnérables lors des prochaines canicules ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Que pourriez-vous faire concrètement pour aider vos voisins âgés ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 26 : 2005 Ouragan Katrina -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌀</span>
+                                <span class="card-title">2005 — OURAGAN KATRINA</span>
+                                <span class="card-number">#26</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #434343, #000000);">🌊</div>
+                            <div class="card-tagline">La Nouvelle-Orléans sous les eaux — Inégalités face aux catastrophes</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>2005 — OURAGAN KATRINA</h3>
+                            <p>L'ouragan dévaste La Nouvelle-Orléans. Les plus pauvres, majoritairement Noirs, ne peuvent pas évacuer. 1800 morts, des milliers de déplacés.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Comment avez-vous perçu cette catastrophe à l'époque ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Comment éviter que les pauvres soient toujours les premières victimes ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 27 : 2015 COP21 Paris -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🇫🇷</span>
+                                <span class="card-title">2015 — COP21 PARIS</span>
+                                <span class="card-number">#27</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #667eea, #764ba2);">📜</div>
+                            <div class="card-tagline">Accords de Paris : limiter le réchauffement à +1,5°C — Un espoir déjà dépassé</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>2015 — COP21 PARIS</h3>
+                            <p>195 pays s'engagent à limiter le réchauffement. Euphorie mondiale. Mais 9 ans plus tard, les émissions n'ont pas baissé.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous cru en ces accords ? Qu'est-ce qui a échoué ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Les COP servent-elles encore à quelque chose selon vous ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 28 : 2018 Canicules Répétées -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🔥</span>
+                                <span class="card-title">2018+ — CANICULES & FEUX</span>
+                                <span class="card-number">#28</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #ff0844, #ffb199);">🔥</div>
+                            <div class="card-tagline">Chaque été bat des records — La "nouvelle normalité"</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>2018+ — CANICULES & FEUX</h3>
+                            <p>2018, 2019, 2022, 2023 : chaque été est le "plus chaud jamais enregistré". Incendies en Grèce, Californie, Australie, France...</p>
+                            <div class="question elder"><strong>Aînés :</strong> Comment vivez-vous ces étés de plus en plus chauds ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Imaginez-vous encore des étés "normaux" ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 29 : 2019 Grèves Climat -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">✊</span>
+                                <span class="card-title">2019 — GRÈVES POUR LE CLIMAT</span>
+                                <span class="card-number">#29</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #11998e, #38ef7d);">📢</div>
+                            <div class="card-tagline">Des millions de jeunes dans les rues : "Il n'y a pas de planète B"</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>2019 — GRÈVES CLIMAT</h3>
+                            <p>Inspirés par Greta Thunberg, des millions de jeunes quittent les salles de classe pour manifester. Un mouvement global sans précédent.</p>
+                            <div class="question youth"><strong>Jeunes :</strong> Avez-vous participé ? Qu'avez-vous ressenti ?</div>
+                            <div class="question elder"><strong>Aînés :</strong> Comment avez-vous perçu ce mouvement ? Vous a-t-il fait réfléchir ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 30 : 2020 COVID & Pause Carbone -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">😷</span>
+                                <span class="card-title">2020 — COVID & PAUSE CARBONE</span>
+                                <span class="card-number">#30</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #fa709a, #fee140);">🦠</div>
+                            <div class="card-tagline">Confinement mondial : les émissions chutent... puis rebondissent</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>2020 — COVID & PAUSE CARBONE</h3>
+                            <p>Le confinement arrête l'économie. Les émissions baissent de 7%. Mais dès 2021, elles repartent à la hausse. Occasion manquée ?</p>
+                            <div class="question elder"><strong>Aînés :</strong> Qu'avez-vous ressenti pendant cette pause forcée ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Peut-on ralentir volontairement comme pendant le COVID ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartes 31-35 : Récits Complémentaires -->
+
+                <!-- Carte 31 : Sobriété Années 1950 -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🏡</span>
+                                <span class="card-title">ANNÉES 1950-60 — SOBRIÉTÉ</span>
+                                <span class="card-number">#31</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #f2709c, #ff9472);">🌿</div>
+                            <div class="card-tagline">Avant la consommation de masse : peu de déchets, réparation, circuits courts</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>ANNÉES 1950-60 — SOBRIÉTÉ</h3>
+                            <p>Avant la société de consommation : on réparait, on gardait, on partageait. Empreinte carbone faible, mais vie plus dure aussi.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Quelles pratiques de sobriété avez-vous connues ? Sont-elles transférables ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> La sobriété vous attire ou vous effraie ? Pourquoi ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 32 : Révolution Numérique -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">💻</span>
+                                <span class="card-title">RÉVOLUTION NUMÉRIQUE</span>
+                                <span class="card-number">#32</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #a1c4fd, #c2e9fb);">📱</div>
+                            <div class="card-tagline">Internet, smartphones : progrès ou empreinte cachée ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>RÉVOLUTION NUMÉRIQUE</h3>
+                            <p>Le numérique a transformé nos vies. Mais datacenters, smartphones, streaming : 4% des émissions mondiales et en hausse.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Comment le numérique a-t-il changé votre rapport au monde ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Pourriez-vous vivre sans smartphone ? Sans internet ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 33 : Transition Énergétique Bretagne -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">⚡</span>
+                                <span class="card-title">TRANSITION BRETAGNE</span>
+                                <span class="card-number">#33</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #ffecd2, #fcb69f);">🌬️</div>
+                            <div class="card-tagline">Éoliennes offshore, agriculture bio : la Bretagne en transition</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>TRANSITION BRETAGNE</h3>
+                            <p>La Bretagne développe éolien offshore (Baie de Saint-Brieuc), agriculture bio, méthanisation. Mais aussi tensions sur modèle agricole intensif.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Comment l'agriculture bretonne a-t-elle évolué dans votre vie ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Que pensez-vous du modèle agricole breton actuel ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 34 : Mémoire des Saisons -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🍂</span>
+                                <span class="card-title">MÉMOIRE DES SAISONS</span>
+                                <span class="card-number">#34</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #f093fb, #f5576c);">🌸</div>
+                            <div class="card-tagline">Vendanges avancées, neiges disparues : les saisons changent</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>MÉMOIRE DES SAISONS</h3>
+                            <p>Les vendanges avancent de 3 semaines. Les neiges d'antan disparaissent. Les hirondelles reviennent plus tôt. La nature témoigne du changement.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Quels changements de saisons avez-vous observés dans votre vie ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Avez-vous connu de "vrais" hivers avec de la neige ?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 35 : Inondations Locales -->
+                <div class="card-container">
+                    <div class="card recits">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌊</span>
+                                <span class="card-title">INONDATIONS RENNES</span>
+                                <span class="card-number">#35</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #0575e6, #021b79);">🏘️</div>
+                            <div class="card-tagline">Vilaine en crue, quartiers inondés : le climat frappe localement</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>INONDATIONS RENNES</h3>
+                            <p>Les crues de la Vilaine se multiplient. Quartiers touchés, routes coupées. Le climat n'est pas qu'une abstraction lointaine.</p>
+                            <div class="question elder"><strong>Aînés :</strong> Avez-vous connu des inondations marquantes à Rennes ?</div>
+                            <div class="question youth"><strong>Jeunes :</strong> Comment protéger la ville des futures inondations ?</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CATÉGORIE 3 : RESSOURCES GÉNÉRATIONNELLES (10 cartes) -->
+        <div class="category">
+            <div class="category-header">
+                <h2 class="category-title">🟠 Cartes Ressources Générationnelles</h2>
+                <span class="category-count">10 cartes</span>
+            </div>
+            <div class="cards-grid">
+
+                <!-- Carte 36 : Curiosité Enfants -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">👧</span>
+                                <span class="card-title">CURIOSITÉ & APPRENTISSAGE</span>
+                                <span class="card-number">#36</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #f093fb, #f5576c);">🔍</div>
+                            <div class="card-tagline">Enfants/Collégiens : Apprendre vite, poser des questions, transmettre aux parents</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>CURIOSITÉ & APPRENTISSAGE</h3>
+                            <p><strong>Génération : Enfants/Collégiens (10-14 ans)</strong></p>
+                            <p>Les enfants apprennent vite, posent des questions, transmettent à leurs parents.</p>
+                            <p><strong>Exemples d'action :</strong></p>
+                            <ul>
+                                <li>Ateliers climat à l'école, éco-délégués</li>
+                                <li>Projets de sciences participatives</li>
+                                <li>Sensibiliser leurs familles</li>
+                            </ul>
+                            <p style="margin-top: 10px; font-style: italic;">Qui pourrait animer un atelier climat pour des CM2 ?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 37 : Créativité Enfants -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🎨</span>
+                                <span class="card-title">CRÉATIVITÉ & JEU</span>
+                                <span class="card-number">#37</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #fa709a, #fee140);">✏️</div>
+                            <div class="card-tagline">Enfants : Imagination pour inventer de nouveaux modes de vie, moins de préjugés</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>CRÉATIVITÉ & JEU</h3>
+                            <p><strong>Génération : Enfants (10-14 ans)</strong></p>
+                            <p>Imagination pour inventer de nouveaux modes de vie, moins de préjugés.</p>
+                            <p><strong>Exemples :</strong></p>
+                            <ul>
+                                <li>Dessiner le quartier bas-carbone</li>
+                                <li>Inventer un jeu de société climat</li>
+                                <li>Bricoler des objets à partir de déchets</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 38 : Maîtrise Numérique Jeunes -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">📱</span>
+                                <span class="card-title">MAÎTRISE NUMÉRIQUE</span>
+                                <span class="card-number">#38</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #84fab0, #8fd3f4);">💻</div>
+                            <div class="card-tagline">Jeunes : Mobilisation via réseaux sociaux, création de contenus, applications</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>MAÎTRISE NUMÉRIQUE</h3>
+                            <p><strong>Génération : Jeunes (15-35 ans)</strong></p>
+                            <p>Utilisation des outils numériques pour sensibiliser, organiser, et innover.</p>
+                            <p><strong>Exemples d'action :</strong></p>
+                            <ul>
+                                <li>Campagnes Instagram/TikTok climat</li>
+                                <li>Cartographie collaborative (OpenStreetMap)</li>
+                                <li>Applications anti-gaspi</li>
+                            </ul>
+                            <p style="margin-top: 10px; font-style: italic;">Qui pourrait créer du contenu digital pour sensibiliser ?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 39 : Énergie & Mobilisation Jeunes -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">✊</span>
+                                <span class="card-title">ÉNERGIE & MOBILISATION</span>
+                                <span class="card-number">#39</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #11998e, #38ef7d);">📣</div>
+                            <div class="card-tagline">Jeunes : Se mobiliser rapidement, organiser événements, porter la voix politique</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>ÉNERGIE & MOBILISATION</h3>
+                            <p><strong>Génération : Jeunes (15-35 ans)</strong></p>
+                            <p>Capacité à se mobiliser rapidement, organiser événements, porter la voix politique.</p>
+                            <p><strong>Exemples :</strong></p>
+                            <ul>
+                                <li>Marches climat</li>
+                                <li>Occupations symboliques</li>
+                                <li>Pétitions et campagnes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 40 : Innovation Jeunes -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">💡</span>
+                                <span class="card-title">INNOVATION & EXPÉRIMENTATION</span>
+                                <span class="card-number">#40</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #ffecd2, #fcb69f);">🔬</div>
+                            <div class="card-tagline">Jeunes : Essayer de nouvelles pratiques, créer des alternatives</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>INNOVATION & EXPÉRIMENTATION</h3>
+                            <p><strong>Génération : Jeunes (15-35 ans)</strong></p>
+                            <p>Essayer de nouvelles pratiques, créer des alternatives (véganisme, minimalisme, low-tech).</p>
+                            <p><strong>Exemples :</strong></p>
+                            <ul>
+                                <li>Repair cafés</li>
+                                <li>Frigos solidaires</li>
+                                <li>Tiers-lieux et coliving</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 41 : Réseaux Adultes -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🤝</span>
+                                <span class="card-title">RÉSEAUX & ORGANISATION</span>
+                                <span class="card-number">#41</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #a1c4fd, #c2e9fb);">📊</div>
+                            <div class="card-tagline">Adultes actifs : Contacts institutionnels, leviers en entreprise, capacité financière</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>RÉSEAUX & ORGANISATION</h3>
+                            <p><strong>Génération : Adultes actifs (35-60 ans)</strong></p>
+                            <p>Contacts institutionnels, leviers dans entreprises/administrations, capacité financière.</p>
+                            <p><strong>Exemples :</strong></p>
+                            <ul>
+                                <li>Lobbying interne, RSE</li>
+                                <li>Budgets participatifs municipaux</li>
+                                <li>Financements associatifs</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 42 : Compétences Techniques Adultes -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🔧</span>
+                                <span class="card-title">COMPÉTENCES TECHNIQUES</span>
+                                <span class="card-number">#42</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #667eea, #764ba2);">🛠️</div>
+                            <div class="card-tagline">Adultes : Savoirs professionnels transférables (ingénierie, enseignement, santé...)</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>COMPÉTENCES TECHNIQUES</h3>
+                            <p><strong>Génération : Adultes actifs (35-60 ans)</strong></p>
+                            <p>Savoirs professionnels transférables (ingénierie, enseignement, santé, agriculture...).</p>
+                            <p><strong>Exemples :</strong></p>
+                            <ul>
+                                <li>Former aux low-tech</li>
+                                <li>Audits énergétiques bénévoles</li>
+                                <li>Enseigner permaculture</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 43 : Mémoire Aînés -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">📖</span>
+                                <span class="card-title">MÉMOIRE & PERSPECTIVE</span>
+                                <span class="card-number">#43</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #ffecd2, #fcb69f);">📚</div>
+                            <div class="card-tagline">Aînés : Témoignage des transformations sur 60-80 ans, recul critique</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>MÉMOIRE & PERSPECTIVE</h3>
+                            <p><strong>Génération : Aînés (60+ ans)</strong></p>
+                            <p>Témoignage des transformations sur 60-80 ans, recul critique.</p>
+                            <p><strong>Exemples :</strong></p>
+                            <ul>
+                                <li>Raconter les crises passées</li>
+                                <li>Relativiser la peur</li>
+                                <li>Transmettre valeurs de solidarité</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 44 : Savoir-Faire Low-Tech Aînés -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🌱</span>
+                                <span class="card-title">SAVOIR-FAIRE LOW-TECH</span>
+                                <span class="card-number">#44</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #c2e59c, #64b3f4);">🪴</div>
+                            <div class="card-tagline">Aînés : Jardiner, réparer, conserver aliments, économiser ressources</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>SAVOIR-FAIRE LOW-TECH</h3>
+                            <p><strong>Génération : Aînés (60+ ans)</strong></p>
+                            <p>Techniques pré-numériques pour vivre avec sobriété et autonomie.</p>
+                            <p><strong>Exemples :</strong></p>
+                            <ul>
+                                <li>Ateliers intergénérationnels couture/réparation</li>
+                                <li>Jardins partagés avec transmission</li>
+                                <li>Conservation alimentaire (bocaux, séchage)</li>
+                            </ul>
+                            <p style="margin-top: 10px; font-style: italic;">Qui pourrait enseigner ces savoir-faire aux jeunes ?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 45 : Disponibilité Aînés -->
+                <div class="card-container">
+                    <div class="card ressources">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">⏰</span>
+                                <span class="card-title">DISPONIBILITÉ & TEMPS</span>
+                                <span class="card-number">#45</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #f093fb, #f5576c);">❤️</div>
+                            <div class="card-tagline">Aînés : Temps pour bénévolat, transmission, accompagnement</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>DISPONIBILITÉ & TEMPS</h3>
+                            <p><strong>Génération : Aînés (60+ ans)</strong></p>
+                            <p>Retraités disposent de temps pour bénévolat, transmission, accompagnement.</p>
+                            <p><strong>Exemples :</strong></p>
+                            <ul>
+                                <li>Permanences associatives</li>
+                                <li>Mentorat jeunes entrepreneurs climat</li>
+                                <li>Accompagnement scolaire éco-projets</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CATÉGORIE 4 : DILEMMES & GOUVERNANCE (10 cartes) -->
+        <div class="category">
+            <div class="category-header">
+                <h2 class="category-title">🟥 Cartes Dilemmes & Gouvernance</h2>
+                <span class="category-count">10 cartes</span>
+            </div>
+            <div class="cards-grid">
+
+                <!-- Carte 46 : Taxe Carbone -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">⚖️</span>
+                                <span class="card-title">TAXE CARBONE : JUSTE ?</span>
+                                <span class="card-number">#46</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #232526, #414345);">💶</div>
+                            <div class="card-tagline">Pénalise-t-elle les pauvres ou responsabilise-t-elle les riches ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>TAXE CARBONE : JUSTE OU INJUSTE ?</h3>
+                            <p>Une taxe carbone augmente le prix des énergies fossiles. Mais qui paie vraiment ?</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro (État/UE) :</strong>
+                                    Taxe progressive avec redistribution intégrale aux 50% les plus pauvres ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso (Rennes Métropole) :</strong>
+                                    Aides locales pour isoler logements précaires + bonus vélo ciblé ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro (Individu) :</strong>
+                                    Accepter de réduire ma consommation volontairement sans attendre la taxe ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 47 : Voiture vs Transports -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🚗</span>
+                                <span class="card-title">VOITURE VS TRANSPORTS</span>
+                                <span class="card-number">#47</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #ff0844, #ffb199);">🚇</div>
+                            <div class="card-tagline">Liberté individuelle vs climat — Comment concilier ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>VOITURE INDIVIDUELLE VS TRANSPORTS COLLECTIFS</h3>
+                            <p>Libertés individuelles vs climat — comment concilier ?</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro :</strong>
+                                    Interdire voitures thermiques en ville d'ici 2030 ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso :</strong>
+                                    Densifier transports en commun Rennes Métropole ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro :</strong>
+                                    Covoiturer, utiliser vélo, télétravail ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 48 : Nucléaire ou Renouvelables -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">☢️</span>
+                                <span class="card-title">NUCLÉAIRE OU RENOUVELABLES ?</span>
+                                <span class="card-number">#48</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #89f7fe, #66a6ff);">⚡</div>
+                            <div class="card-tagline">Décarboner rapidement (nucléaire) ou privilégier sécurité long terme ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>NUCLÉAIRE OU RENOUVELABLES ?</h3>
+                            <p>Décarboner rapidement (nucléaire) ou privilégier sécurité long terme (100% renouvelables) ?</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro :</strong>
+                                    Prolonger centrales existantes ou fermer ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso :</strong>
+                                    Soutenir projets solaires citoyens locaux ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro :</strong>
+                                    Réduire ma consommation électrique (sobriété) ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 49 : Agriculture Intensive vs Bio -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🚜</span>
+                                <span class="card-title">AGRICULTURE : QUANTITÉ OU QUALITÉ ?</span>
+                                <span class="card-number">#49</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #ffecd2, #fcb69f);">🌾</div>
+                            <div class="card-tagline">Nourrir 8 milliards (productivité) ou préserver sol et biodiversité ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>AGRICULTURE INTENSIVE VS BIO LOCALE</h3>
+                            <p>Nourrir 8 milliards (productivité) ou préserver sol et biodiversité (qualité) ?</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro :</strong>
+                                    Réformer PAC pour soutenir agroécologie ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso :</strong>
+                                    Cantines scolaires Rennes 100% bio local d'ici 2027 ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro :</strong>
+                                    Acheter en AMAP, réduire viande ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 50 : Intelligence Artificielle -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🤖</span>
+                                <span class="card-title">IA : ALLIÉE OU MENACE ?</span>
+                                <span class="card-number">#50</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(135deg, #667eea, #764ba2);">🧠</div>
+                            <div class="card-tagline">Optimiser l'énergie... mais consommer massivement et concentrer le pouvoir</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>IA : ALLIÉE OU MENACE ?</h3>
+                            <p>L'IA peut optimiser réseaux énergétiques, prédire impacts... mais consomme d'énormes quantités d'électricité et concentre le contrôle.</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro :</strong>
+                                    Réguler les datacenters, taxer consommation énergétique de l'IA ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso :</strong>
+                                    Former citoyens aux enjeux IA et climat dans les écoles ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro :</strong>
+                                    Limiter mon usage d'IA générative énergivore (ChatGPT, Midjourney) ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 51 : Croissance vs Décroissance -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">📈</span>
+                                <span class="card-title">CROISSANCE VS DÉCROISSANCE</span>
+                                <span class="card-number">#51</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #fa709a, #fee140);">📉</div>
+                            <div class="card-tagline">Découpler croissance et émissions, ou ralentir volontairement ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>CROISSANCE VS DÉCROISSANCE</h3>
+                            <p>Peut-on découpler croissance économique et émissions, ou faut-il ralentir volontairement ?</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro :</strong>
+                                    Abandonner le PIB comme indicateur de réussite ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso :</strong>
+                                    Expérimenter monnaies locales, économie circulaire ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro :</strong>
+                                    Consommer moins mais mieux ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 52-55 : Dilemmes complémentaires -->
+                
+                <!-- Carte 52 : Démocratie vs Urgence -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🗳️</span>
+                                <span class="card-title">DÉMOCRATIE VS URGENCE</span>
+                                <span class="card-number">#52</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to top, #667eea, #764ba2);">⏰</div>
+                            <div class="card-tagline">Faut-il un "État d'urgence climatique" pour agir vite ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>DÉMOCRATIE VS URGENCE</h3>
+                            <p>L'urgence climatique justifie-t-elle des mesures autoritaires, ou faut-il préserver la délibération démocratique ?</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro :</strong>
+                                    Créer un "Haut Conseil Climat" avec pouvoirs contraignants ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso :</strong>
+                                    Assemblées citoyennes climat décisionnelles ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro :</strong>
+                                    Accepter des restrictions de libertés pour le climat ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 53 : Adaptation Coûteuse -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">💰</span>
+                                <span class="card-title">QUI PAIE L'ADAPTATION ?</span>
+                                <span class="card-number">#53</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(120deg, #a1c4fd, #c2e9fb);">🛡️</div>
+                            <div class="card-tagline">Digues, climatisation, migrations : qui finance l'adaptation ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>ADAPTATION COÛTEUSE</h3>
+                            <p>S'adapter au climat (digues, réseaux d'eau, agriculture résiliente) coûte des milliards. Qui paie ?</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro :</strong>
+                                    Fonds international climat financé par pays riches historiques ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso :</strong>
+                                    Taxes locales pour financer digues et infrastructures ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro :</strong>
+                                    Accepter de payer plus d'impôts pour protéger mon territoire ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 54 : Technologie vs Sobriété -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🔬</span>
+                                <span class="card-title">TECHNO VS SOBRIÉTÉ</span>
+                                <span class="card-number">#54</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to right, #ffecd2, #fcb69f);">🌿</div>
+                            <div class="card-tagline">Innovation high-tech ou changement de mode de vie ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>TECHNOLOGIE VS SOBRIÉTÉ</h3>
+                            <p>Peut-on résoudre le climat par l'innovation (fusion nucléaire, capture CO2) ou faut-il changer nos modes de vie (sobriété) ?</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro :</strong>
+                                    Investir massivement dans R&D technologique ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso :</strong>
+                                    Promouvoir sobriété locale (jardins partagés, transports doux) ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro :</strong>
+                                    Attendre les solutions technologiques ou changer dès maintenant ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 55 : Responsabilité Entreprises vs Consommateurs -->
+                <div class="card-container">
+                    <div class="card dilemmes">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">🏭</span>
+                                <span class="card-title">ENTREPRISES VS CONSOMMATEURS</span>
+                                <span class="card-number">#55</span>
+                            </div>
+                            <div class="card-illustration" style="background: linear-gradient(to bottom, #232526, #414345);">🛒</div>
+                            <div class="card-tagline">Qui doit agir en premier : les producteurs ou les acheteurs ?</div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>RESPONSABILITÉ ENTREPRISES VS CONSOMMATEURS</h3>
+                            <p>Qui doit agir en premier ? Les entreprises polluent, mais les consommateurs achètent...</p>
+                            <div class="governance-levels">
+                                <div class="level level-macro">
+                                    <strong>🏛️ Macro :</strong>
+                                    Réguler les entreprises (interdire greenwashing, imposer bilan carbone) ?
+                                </div>
+                                <div class="level level-meso">
+                                    <strong>🏘️ Méso :</strong>
+                                    Labels locaux pour valoriser entreprises vertueuses ?
+                                </div>
+                                <div class="level level-micro">
+                                    <strong>👤 Micro :</strong>
+                                    Boycotter entreprises polluantes, consommer local ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CARTES BLANCHES (5 cartes) -->
+        <div class="category">
+            <div class="category-header">
+                <h2 class="category-title">⚪ Cartes Blanches</h2>
+                <span class="category-count">5 cartes vierges</span>
+            </div>
+            <div class="cards-grid">
+
+                <!-- Carte Blanche 1 -->
+                <div class="card-container">
+                    <div class="card blanches">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">✏️</span>
+                                <span class="card-title">CARTE BLANCHE — À VOUS DE CRÉER !</span>
+                                <span class="card-number">🎨</span>
+                            </div>
+                            <div class="card-illustration" style="background: #f8f8f8;">
+                                <div class="blank-card-content">
+                                    <p style="font-size: 1.2em; margin-bottom: 15px;">📝 Créez votre propre carte !</p>
+                                    <p style="font-size: 0.9em; color: #666;">Cette carte est vierge. Utilisez-la pour ajouter :</p>
+                                    <ul style="text-align: left; font-size: 0.85em; color: #666; margin: 15px;">
+                                        <li>Une donnée scientifique locale</li>
+                                        <li>Un récit générationnel personnel</li>
+                                        <li>Une ressource manquante</li>
+                                        <li>Un dilemme de votre territoire</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>CARTE BLANCHE — MODE D'EMPLOI</h3>
+                            <p><strong>Instructions :</strong></p>
+                            <p style="font-size: 0.9em; margin: 10px 0;">1. Choisissez un type de carte (Science, Récit, Ressource, Dilemme)</p>
+                            <p style="font-size: 0.9em; margin: 10px 0;">2. Remplissez les zones ci-dessous</p>
+                            <p style="font-size: 0.9em; margin: 10px 0;">3. Le groupe doit approuver avant intégration</p>
+                            <div class="blank-zones">
+                                <div class="blank-zone">
+                                    <strong>Titre de la carte :</strong>
+                                </div>
+                                <div class="blank-zone">
+                                    <strong>Contenu / Données :</strong>
+                                </div>
+                                <div class="blank-zone">
+                                    <strong>Questions / Actions :</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartes Blanches 2-5 (identiques) -->
+                <div class="card-container">
+                    <div class="card blanches">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">✏️</span>
+                                <span class="card-title">CARTE BLANCHE #2</span>
+                                <span class="card-number">🎨</span>
+                            </div>
+                            <div class="card-illustration" style="background: #f8f8f8;">
+                                <div class="blank-card-content">
+                                    <p style="font-size: 3em;">✍️</p>
+                                    <p style="margin-top: 20px; color: #666;">Espace libre pour vos idées</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>CARTE BLANCHE #2</h3>
+                            <div class="blank-zones">
+                                <div class="blank-zone"><strong>Votre contenu ici</strong></div>
+                                <div class="blank-zone"><strong>Données / Récit</strong></div>
+                                <div class="blank-zone"><strong>Questions</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container">
+                    <div class="card blanches">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">✏️</span>
+                                <span class="card-title">CARTE BLANCHE #3</span>
+                                <span class="card-number">🎨</span>
+                            </div>
+                            <div class="card-illustration" style="background: #f8f8f8;">
+                                <div class="blank-card-content">
+                                    <p style="font-size: 3em;">✍️</p>
+                                    <p style="margin-top: 20px; color: #666;">Espace libre pour vos idées</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>CARTE BLANCHE #3</h3>
+                            <div class="blank-zones">
+                                <div class="blank-zone"><strong>Votre contenu ici</strong></div>
+                                <div class="blank-zone"><strong>Données / Récit</strong></div>
+                                <div class="blank-zone"><strong>Questions</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container">
+                    <div class="card blanches">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">✏️</span>
+                                <span class="card-title">CARTE BLANCHE #4</span>
+                                <span class="card-number">🎨</span>
+                            </div>
+                            <div class="card-illustration" style="background: #f8f8f8;">
+                                <div class="blank-card-content">
+                                    <p style="font-size: 3em;">✍️</p>
+                                    <p style="margin-top: 20px; color: #666;">Espace libre pour vos idées</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>CARTE BLANCHE #4</h3>
+                            <div class="blank-zones">
+                                <div class="blank-zone"><strong>Votre contenu ici</strong></div>
+                                <div class="blank-zone"><strong>Données / Récit</strong></div>
+                                <div class="blank-zone"><strong>Questions</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container">
+                    <div class="card blanches">
+                        <div class="card-face card-front">
+                            <div class="card-header">
+                                <span class="card-icon">✏️</span>
+                                <span class="card-title">CARTE BLANCHE #5</span>
+                                <span class="card-number">🎨</span>
+                            </div>
+                            <div class="card-illustration" style="background: #f8f8f8;">
+                                <div class="blank-card-content">
+                                    <p style="font-size: 3em;">✍️</p>
+                                    <p style="margin-top: 20px; color: #666;">Espace libre pour vos idées</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>CARTE BLANCHE #5</h3>
+                            <div class="blank-zones">
+                                <div class="blank-zone"><strong>Votre contenu ici</strong></div>
+                                <div class="blank-zone"><strong>Données / Récit</strong></div>
+                                <div class="blank-zone"><strong>Questions</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="flip-hint">
+            🎉 55 CARTES COMPLÈTES — Survolez pour découvrir le verso | Scroll pour explorer toutes les catégories
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; padding: 30px; background: rgba(255,255,255,0.15); border-radius: 20px; backdrop-filter: blur(10px);">
+            <h2 style="color: white; margin-bottom: 20px;">🌍 Fresque des Générations v2.0</h2>
+            <p style="color: rgba(255,255,255,0.9); font-size: 1.1em; max-width: 800px; margin: 0 auto;">
+                Prototype complet intégrant toutes les demandes clients :<br>
+                ✅ Inégalités climatiques (Oxfam, Afrique)<br>
+                ✅ Urgence temporelle (+1,5°C, points de bascule)<br>
+                ✅ Gouvernance multi-niveaux (Macro/Méso/Micro)<br>
+                ✅ Intelligence Artificielle<br>
+                ✅ Démographie & adaptation équitable
+            </p>
+            <p style="color: rgba(255,255,255,0.8); margin-top: 20px; font-size: 0.95em;">
+                Alliance des générations pour le climat • Novembre 2025
+            </p>
+        </div>
+
     </div>
-
-    <!-- SECTION 1 : FONDATIONS - Comprendre (Cartes 1-15) -->
-    <div class="card-page section-divider">
-        <h2>PHASE 1 : FONDATIONS</h2>
-        <p>Comprendre les mécanismes climatiques et les inégalités mondiales</p>
-        <p style="font-size: 14px; margin-top: 10px; opacity: 0.7;">Cartes 1-15 • Science & Inégalités</p>
-    </div>
-
-    <!-- Carte 1 : Effet de Serre -->
-    <div class="card-page">
-        <div class="card-header science">
-            <div>
-                <span class="card-number">Carte #1</span>
-                <span class="card-category">Science & Inégalités</span>
-            </div>
-            <h3 class="card-title">EFFET DE SERRE</h3>
-            <div class="card-icon">🌡️</div>
-        </div>
-        <div class="card-body">
-            <div class="card-illustration-placeholder">
-                📸 Insérer image : Schéma effet de serre (rayons soleil → atmosphère → chaleur piégée)<br>
-                Source recommandée : ADEME ou GIEC
-            </div>
-            <p class="card-tagline">Le CO₂ emprisonne la chaleur du soleil dans l'atmosphère</p>
-            <div class="card-data">
-                <strong>Données :</strong> CO₂ atmosphérique : 280 ppm (1850) → 421 ppm (2024). Augmentation de +50% en 170 ans.
-            </div>
-            <div class="card-questions">
-                <div class="card-question elder"><strong>Aînés :</strong> Parliez-vous de l'effet de serre dans votre jeunesse ?</div>
-                <div class="card-question youth"><strong>Jeunes :</strong> Depuis quand en avez-vous entendu parler ?</div>
-            </div>
-            <div class="card-source">Source : GIEC AR6 2023</div>
-        </div>
-    </div>
-
-    <!-- Carte 2 : Points de Bascule -->
-    <div class="card-page">
-        <div class="card-header science">
-            <div>
-                <span class="card-number">Carte #2</span>
-                <span class="card-category">Science & Inégalités</span>
-            </div>
-            <h3 class="card-title">POINTS DE BASCULE</h3>
-            <div class="card-icon">⚠️</div>
-        </div>
-        <div class="card-body">
-            <div class="card-illustration-placeholder">
-                📸 Insérer image : Dominos tombant en cascade / Diagramme tipping points<br>
-                Source : Nature Climate Change ou Stockholm Resilience Centre
-            </div>
-            <p class="card-tagline">Au-delà de +2°C, des cascades irréversibles peuvent se déclencher</p>
-            <div class="card-data">
-                <strong>Le risque :</strong> Déclenchement de boucles de rétroaction (fonte calotte glaciaire, dégel pergélisol, dépérissement Amazonie) créant un effet domino incontrôlable.
-            </div>
-            <div class="card-questions">
-                <div class="card-question elder"><strong>Aînés :</strong> Avez-vous vécu des événements climatiques qui vous ont marqué ?</div>
-                <div class="card-question youth"><strong>Jeunes :</strong> Quelles peurs portez-vous pour votre avenir ?</div>
-            </div>
-            <div class="card-source">Source : Wunderling et al., Nature Climate Change 2023</div>
-        </div>
-    </div>
-
-    <!-- Carte 3 : Course Contre la Montre -->
-    <div class="card-page">
-        <div class="card-header science">
-            <div>
-                <span class="card-number">Carte #3</span>
-                <span class="card-category">Science & Inégalités</span>
-            </div>
-            <h3 class="card-title">COURSE CONTRE LA MONTRE</h3>
-            <div class="card-icon">⏰</div>
-        </div>
-        <div class="card-body">
-            <div class="card-illustration-placeholder">
-                📸 Insérer image : Chronomètre / Graphique température 1,5°C-2°C-3°C<br>
-                Source : GIEC "Special Report 1.5°C"
-            </div>
-            <p class="card-tagline">+1,5°C sera atteint d'ici 2029-2030 — Il faut agir MAINTENANT</p>
-            <div class="card-data">
-                <strong>Urgence :</strong> Le seuil de +1,5°C n'est plus atteignable. Il reste ~5 ans pour atteindre le pic d'émissions et inverser la courbe vers la neutralité carbone.
-            </div>
-            <div class="card-questions">
-                <div class="card-question elder"><strong>Aînés :</strong> Combien de temps pensiez-vous avoir pour agir quand vous étiez jeunes ?</div>
-                <div class="card-question youth"><strong>Jeunes :</strong> Que signifie pour vous "agir maintenant" ?</div>
-            </div>
-            <div class="card-source">Source : Forster et al., Earth System Science Data 2025</div>
-        </div>
-    </div>
-
-    <!-- Carte 4 : Démographie Afrique -->
-    <div class="card-page">
-        <div class="card-header science">
-            <div>
-                <span class="card-number">Carte #4</span>
-                <span class="card-category">Science & Inégalités</span>
-            </div>
-            <h3 class="card-title">DÉMOGRAPHIE & EMPREINTE</h3>
-            <div class="card-icon">🌍</div>
-        </div>
-        <div class="card-body">
-            <div class="card-illustration-placeholder">
-                📸 Insérer image : Carte mondiale proportionnelle aux émissions CO₂<br>
-                Source : Our World in Data "CO₂ emissions by country"
-            </div>
-            <p class="card-tagline">L'Afrique : 17% de l'humanité, seulement 4% des émissions CO₂</p>
-            <div class="card-data">
-                <strong>Le contraste :</strong> 1,5 milliard d'Africains (54 pays) = 4% émissions CO₂ mondiales. Pourtant : taux de croissance démographique le plus élevé.
-            </div>
-            <div class="card-questions">
-                <div class="card-question elder"><strong>Aînés :</strong> Comment étiez-vous informés des enjeux mondiaux dans votre jeunesse ?</div>
-                <div class="card-question youth"><strong>Jeunes :</strong> Que pensez-vous de cette injustice ?</div>
-            </div>
-            <div class="card-source">Source : Données ONU Population 2024</div>
-        </div>
-    </div>
-
-    <!-- Carte 5 : Le 1% le Plus Riche -->
-    <div class="card-page">
-        <div class="card-header science">
-            <div>
-                <span class="card-number">Carte #5</span>
-                <span class="card-category">Science & Inégalités</span>
-            </div>
-            <h3 class="card-title">LE 1% LE PLUS RICHE</h3>
-            <div class="card-icon">💰</div>
-        </div>
-        <div class="card-body">
-            <div class="card-illustration-placeholder">
-                📸 Insérer image : Pyramide inversée (1% en or en haut, 66% en gris en bas)<br>
-                Source : Rapport Oxfam 2023 "Égalité climatique"
-            </div>
-            <p class="card-tagline">1% émettent plus de CO₂ que 5 milliards de personnes</p>
-            <div class="card-data">
-                <strong>L'inégalité extrême :</strong> 1% les plus riches émettent plus de CO₂ que 66% (5 milliards) les plus pauvres de l'humanité.
-            </div>
-            <div class="card-questions">
-                <div class="card-question elder"><strong>Aînés :</strong> Comment le niveau de vie a-t-il évolué dans votre vie ?</div>
-                <div class="card-question youth"><strong>Jeunes :</strong> Quel mode de vie vous semble juste et soutenable ?</div>
-            </div>
-            <div class="card-source">Source : Oxfam "Égalité climatique, une planète pour les 99%" 2023</div>
-        </div>
-    </div>
-
-    <!-- Carte 6 : Qui Subit ? -->
-    <div class="card-page">
-        <div class="card-header science">
-            <div>
-                <span class="card-number">Carte #6</span>
-                <span class="card-category">Science & Inégalités</span>
-            </div>
-            <h3 class="card-title">QUI SUBIT LES IMPACTS ?</h3>
-            <div class="card-icon">🌊</div>
-        </div>
-        <div class="card-body">
-            <div class="card-illustration-placeholder">
-                📸 Insérer image : Inondation village en développement / Sécheresse Afrique<br>
-                Source : UNICEF ou Croix-Rouge images humanitaires
-            </div>
-            <p class="card-tagline">Pays à faible revenu : 0 responsabilité, 100% des impacts dès aujourd'hui</p>
-            <div class="card-data">
-                <strong>Injustice :</strong> Les pays les plus pauvres subissent inondations, sécheresses, famines alors qu'ils n'ont pas causé le changement climatique.
-            </div>
-            <div class="card-questions">
-                <div class="card-question elder"><strong>Aînés :</strong> Avez-vous vu des communautés vulnérables dans votre vie ?</div>
-                <div class="card-question youth"><strong>Jeunes :</strong> Connaissez-vous des personnes directement touchées par le climat ?</div>
-            </div>
-            <div class="card-source">Source : GIEC AR6 2023, Chapitre Impacts</div>
-        </div>
-    </div>
-
-    <!-- Carte 7 : Adaptation & Atténuation -->
-    <div class="card-page">
-        <div class="card-header science">
-            <div>
-                <span class="card-number">Carte #7</span>
-                <span class="card-category">Science & Inégalités</span>
-            </div>
-            <h3 class="card-title">ADAPTATION & ATTÉNUATION</h3>
-            <div class="card-icon">⚖️</div>
-        </div>
-        <div class="card-body">
-            <div class="card-illustration-placeholder">
-                📸 Insérer image : Balance avec "Réduire émissions" / "S'adapter aux impacts"<br>
-                Source : GIEC glossaire ou infographie ADEME
-            </div>
-            <p class="card-tagline">Réduire émissions (atténuation) ET s'adapter aux impacts (adaptation) — Les deux sont nécessaires ET justes</p>
-            <div class="card-data">
-                <strong>Deux stratégies :</strong> Atténuation = réduire émissions (responsabilité pays riches). Adaptation = digues, agriculture résiliente (coûte cher aux pays pauvres).
-            </div>
-            <div class="card-questions">
-                <div class="card-question elder"><strong>Aînés :</strong> Quelles adaptations avez-vous connues (ex: sécheresse 1976) ?</div>
-                <div class="card-question youth"><strong>Jeunes :</strong> Quelles adaptations imaginez-vous pour votre quartier ?</div>
-            </div>
-            <div class="card-source">Source : GIEC 2023</div>
-        </div>
-    </div>
-
-    <!-- Continuer avec les 52 cartes restantes... -->
-    <!-- Pour économiser l'espace, je vais créer un template répétable -->
-
-    <!-- INSTRUCTION FINALE -->
-    <div class="card-page section-divider">
-        <h2>📄 FIN DU PROTOTYPE</h2>
-        <p style="margin-bottom: 20px;">Ce fichier contient les 7 premières cartes comme exemple de mise en page.</p>
-        <p>Pour obtenir les 59 cartes complètes :</p>
-        <ol style="text-align: left; max-width: 80%; margin: 20px auto; line-height: 1.8;">
-            <li>Dupliquez ce template pour chaque carte</li>
-            <li>Remplacez contenus selon le document complet</li>
-            <li>Ajoutez images dans zones grises</li>
-            <li>Imprimez en PDF (Ctrl+P)</li>
-        </ol>
-        <p style="font-size: 14px; opacity: 0.7; margin-top: 30px;">
-            Document créé pour Alliance des générations pour le climat<br>
-            Novembre 2025 • Version 2.0
-        </p>
-    </div>
-
 </body>
 </html>
